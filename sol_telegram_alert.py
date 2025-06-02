@@ -5,12 +5,11 @@ import time
 bot_token = "7598877636:AAGE_92uUhdgM7ARyEYKA1iN2aCLDb1gdA8"
 chat_id = "486032277"
 
+# Целевые уровни
 entry_price = 155.50
-take_profit_offset = 1.50
-stop_loss_offset = 1.00
-
+take_profit = 157.00
+stop_loss = 154.50
 alert_sent = {"entry": False, "tp": False, "sl": False}
-current_entry = entry_price
 
 def send_telegram_message(message):
     url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
@@ -31,22 +30,17 @@ while True:
         price = get_sol_price()
         print(f"Текущая цена SOL: {price}")
 
-        take_profit = current_entry + take_profit_offset
-        stop_loss = current_entry - stop_loss_offset
-
-        if price >= current_entry and not alert_sent["entry"]:
+        if price >= entry_price and not alert_sent["entry"]:
             send_telegram_message(f"📥 <b>Цена входа достигнута:</b> ${price}")
             alert_sent["entry"] = True
 
         if price >= take_profit and not alert_sent["tp"]:
             send_telegram_message(f"✅ <b>Достигнут тейк-профит:</b> ${price}")
-            current_entry = price
-            alert_sent = {"entry": False, "tp": False, "sl": False}
+            alert_sent["tp"] = True
 
         if price <= stop_loss and not alert_sent["sl"]:
             send_telegram_message(f"🛑 <b>Сработал стоп-лосс:</b> ${price}")
-            current_entry = price
-            alert_sent = {"entry": False, "tp": False, "sl": False}
+            alert_sent["sl"] = True
 
         time.sleep(60)
 
